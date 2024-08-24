@@ -35,7 +35,7 @@ import java.util.Properties;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.example")
-@EnableJpaRepositories(basePackages = "com.example.postsorm.repository")
+@EnableJpaRepositories(basePackages = "com.example")
 @EnableTransactionManagement
 @EnableSpringDataWebSupport
 @PropertySource("classpath:upload_file.properties")
