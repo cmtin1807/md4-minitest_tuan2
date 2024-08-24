@@ -30,6 +30,13 @@
             <label for="image">Image</label>
             <img id="image" width="100" height="100" th:src="@{'/i/' + *{image}}" alt="" src="">
         </div>
+        <div>
+            <label>Type: </label>
+            <th:block th:if="${post.getType()!=null}">
+            <label th:text="${post.getType().name}"></label></th:block>
+            <th:block th:unless="${post.getType()!=null}">
+                <label>Kiểu bài đăng đã bị xóa hoặc không có dữ liệu</label></th:block>
+        </div>
         <input type="submit" value="Remove"/>
     </form>
 </div>

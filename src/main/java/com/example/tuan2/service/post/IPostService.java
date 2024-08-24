@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface IPostService extends IGenerateService<Post> {
     Page<Post> findAllByTitleContaining(Pageable pageable, String title);
     Iterable <Post> findAllByType(Type type);
+    Page<Post> findAll(Pageable pageable);
 }
 
 

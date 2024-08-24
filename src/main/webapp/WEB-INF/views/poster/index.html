@@ -11,6 +11,17 @@
         Create New Product
     </a>
 </p>
+<p>
+    <a th:href="@{/types/}">
+        Type
+    </a>
+</p>
+<div style="margin-bottom: 10px; margin-left: 110px">
+    <form th:action="@{/posts/search}" method="Get">
+        <label><input type="text" name="search" th:value="${search}"></label>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
 <div id="notify">
     <div th:if="${success}">
         <span th:text="${success}"></span>
@@ -45,6 +56,19 @@
     </tr>
     </tbody>
 </table>
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item" th:classappend="${!posts.hasPrevious()} ? 'disabled'">
+            <a class="page-link" th:href="@{/posts/search(page=${posts.number - 1}, search=${search})}">«</a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(1, posts.totalPages)}" th:classappend="${posts.number + 1 == i} ? 'active'">
+            <a class="page-link" th:text="${i}" th:href="@{/posts/search(page=${i - 1}, search=${search})}">1</a>
+        </li>
+        <li class="page-item" th:classappend="${!posts.hasNext()} ? 'disabled'">
+            <a class="page-link" th:href="@{/posts/search(page=${posts.number + 1}, search=${search})}">»</a>
+        </li>
+    </ul>
+</nav>
 
 <footer th:replace="layout::footer"></footer>
 </body>

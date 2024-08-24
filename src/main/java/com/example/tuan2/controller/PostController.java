@@ -1,7 +1,6 @@
 package com.example.tuan2.controller;
 
 
-
 import com.example.tuan2.model.Post;
 import com.example.tuan2.model.PostForm;
 import com.example.tuan2.model.Type;
@@ -9,6 +8,9 @@ import com.example.tuan2.service.post.IPostService;
 import com.example.tuan2.service.type.ITypeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -32,29 +34,47 @@ public class PostController {
         this.postService = postService;
         this.typeService = typeService;
     }
+
     @ModelAttribute("types")
     public Iterable<Type> ListType() {
         return typeService.findAll();
     }
 
 
-    @GetMapping("")
-    public String index(Model model) {
-        model.addAttribute("posts", postService.findAll());
-        return "index";
+    @GetMapping
+    public ModelAndView findAllPost(@PageableDefault(value = 5) Pageable pageable) {
+        Page<Post> posts = postService.findAll(pageable);
+        ModelAndView modelAndView = new ModelAndView("poster/index");
+        modelAndView.addObject("posts", posts);
+        return modelAndView;
+    }
+
+    @GetMapping("/search")
+    public ModelAndView listTittleSearch(@RequestParam("search") Optional<String> search, @PageableDefault(value = 5) Pageable pageable) {
+        Page<Post> posts;
+        String searchValue = search.orElse("");
+        if (!searchValue.isEmpty()) {
+            posts = postService.findAllByTitleContaining(pageable, searchValue);
+        } else {
+            posts = postService.findAll(pageable);
+        }
+        ModelAndView modelAndView = new ModelAndView("poster/index");
+        modelAndView.addObject("posts", posts);
+        modelAndView.addObject("search", searchValue);
+        return modelAndView;
     }
 
     @GetMapping("/create")
     public String create(Model model) {
         model.addAttribute("post", new Post());
-        return "create";
+        return "poster/create";
     }
 
     @Value("${file-upload}")
     private String upload;
 
     @PostMapping("/save")
-    public String save(PostForm postForm , RedirectAttributes redirectAttributes) {
+    public String save(PostForm postForm, RedirectAttributes redirectAttributes) {
         MultipartFile multipartFile = postForm.getImage();
         String fileName = multipartFile.getOriginalFilename();
         try {
@@ -77,11 +97,11 @@ public class PostController {
     public ModelAndView updateForm(@PathVariable Long id) {
         Optional<Post> post = postService.findById(id);
         if (post.isPresent()) {
-            ModelAndView modelAndView = new ModelAndView("/update");
+            ModelAndView modelAndView = new ModelAndView("poster/update");
             modelAndView.addObject("post", post.get());
             return modelAndView;
         } else {
-            return new ModelAndView("/error_404");
+            return new ModelAndView("poster/error_404");
         }
     }
 
@@ -90,16 +110,22 @@ public class PostController {
     public String update(PostForm postForm, RedirectAttributes redirectAttributes) {
         MultipartFile multipartFile = postForm.getImage();
         String fileName = multipartFile.getOriginalFilename();
-        try {
-            FileCopyUtils.copy(multipartFile.getBytes(),new File(upload+fileName));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
         Post post = postService.findById(postForm.getId()).get();
         post.setTitle(postForm.getTitle());
         post.setDescription(postForm.getDescription());
         post.setContent(postForm.getContent());
-        post.setImage(fileName);
+        post.setType(postForm.getType());
+        if (multipartFile.isEmpty()) {
+            post.setImage(post.getImage());
+        } else {
+            post.setImage(fileName);
+            try {
+                FileCopyUtils.copy(multipartFile.getBytes(), new File(upload + fileName));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         postService.save(post);
         redirectAttributes.addFlashAttribute("success", "Post updated successfully");
         return "redirect:/posts/";
@@ -108,7 +134,7 @@ public class PostController {
     @GetMapping("/{id}/delete")
     public ModelAndView deleteForm(@PathVariable Long id) {
         Optional<Post> post = postService.findById(id);
-        ModelAndView modelAndView = new ModelAndView("/delete");
+        ModelAndView modelAndView = new ModelAndView("poster/delete");
         modelAndView.addObject("post", post.get());
         return modelAndView;
 
@@ -124,11 +150,8 @@ public class PostController {
     @GetMapping("/{id}/view")
     public String view(@PathVariable Long id, Model model) {
         model.addAttribute("post", postService.findById(id).get());
-        return "view";
+        return "poster/view";
     }
-
-
-
 
 
 }

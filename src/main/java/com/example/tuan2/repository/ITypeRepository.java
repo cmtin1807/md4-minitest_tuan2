@@ -14,5 +14,4 @@ public interface ITypeRepository extends CrudRepository<Type, Long> {
     @Query(nativeQuery = true,value = "call deleteType(:id)")
     void deleteType(@Param("id") Long id);
 
-
 }

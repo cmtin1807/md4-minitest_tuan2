@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IPostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByTitleContaining(Pageable pageable, String title);
-    Iterable <Post> findAllByType(Type type);}
+    Iterable <Post> findAllByType(Type type);
+}

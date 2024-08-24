@@ -39,6 +39,6 @@ return repository.findById(id);    }
 
     @Override
     public void deleteType(Long id) {
-        repository.deleteById(id);
+        repository.deleteType(id);
     }
 }

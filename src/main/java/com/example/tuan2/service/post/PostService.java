@@ -38,6 +38,12 @@ public class PostService implements IPostService {
     }
 
     @Override
+    public Page<Post> findAll(Pageable pageable) {
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
+    return postRepository.findAll(pageable);
+    }
+
+    @Override
     public Optional<Post> findById(Long id) {
         return postRepository.findById(id);
     }
