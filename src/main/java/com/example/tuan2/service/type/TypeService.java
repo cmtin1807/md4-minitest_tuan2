@@ -1,5 +1,6 @@
 package com.example.tuan2.service.type;
 
+import com.example.tuan2.model.DTO.ICountPost;
 import com.example.tuan2.model.Type;
 import com.example.tuan2.repository.ITypeRepository;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,11 @@ return repository.findById(id);    }
     public void delete(Long id) {
 
         repository.deleteById(id);
+    }
+
+    @Override
+    public Iterable<ICountPost> getCountPost() {
+        return repository.getCountPost();
     }
 
     @Override

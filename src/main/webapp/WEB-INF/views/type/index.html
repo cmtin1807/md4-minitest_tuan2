@@ -38,6 +38,21 @@
     </tr>
     </tbody>
 </table>
+<table id = "">
+    <thead>
+    <tr>
+        <th>name</th>
+        <th>count</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="p, pStatus : ${type1}">
+        <td th:text="${p.getName()}"></td>
+        <td th:text="${p.getNumber()}"></td>
+
+    </tr>
+    </tbody>
+</table>
 <footer th:replace="/layout :: footer"></footer>
 </body>
 </html>

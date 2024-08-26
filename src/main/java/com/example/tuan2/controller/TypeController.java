@@ -1,6 +1,7 @@
 package com.example.tuan2.controller;
 
 
+import com.example.tuan2.model.DTO.ICountPost;
 import com.example.tuan2.model.Type;
 import com.example.tuan2.service.post.IPostService;
 import com.example.tuan2.service.type.ITypeService;
@@ -27,6 +28,8 @@ public class TypeController {
         modelAndView = new ModelAndView("/type/index");
         Iterable<Type> types = typeService.findAll();
         modelAndView.addObject("types", types);
+        Iterable<ICountPost> type1 = typeService.getCountPost();
+        modelAndView.addObject("type1", type1);
         return modelAndView;
     }
 
